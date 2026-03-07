@@ -4,7 +4,7 @@ public class Conveyor : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
-    enum Direction { Straight, Left, Right };
+    enum Direction { Straight, Left, Right, Split };
 
     [SerializeField]
     private Direction direction;
@@ -46,6 +46,15 @@ public class Conveyor : MonoBehaviour
                     animator.SetBool("Left", false);
                 }
                 break;
+            case Direction.Split:
+                if (animator != null)
+                {
+                    animator.SetBool("IsStraight", false);
+                    animator.SetBool("Split", true);
+                    animator.SetBool("Right", true);
+                    animator.SetBool("Left", false);
+                }
+                break;
             default:
                 break;
 
@@ -53,7 +62,14 @@ public class Conveyor : MonoBehaviour
 
         clock = GameObject.FindGameObjectWithTag("Level").GetComponent<GameClock>();
 
-        ItemPoint = transform.Find("Pivot").Find("ItemPoint");
+        if (direction == Direction.Split)
+        {
+            ItemPoint = transform.Find("PivotRight").Find("ItemPoint");
+        }
+        else
+        {
+            ItemPoint = transform.Find("Pivot").Find("ItemPoint");
+        }
     }
 
     private void Start()
@@ -64,12 +80,26 @@ public class Conveyor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        animator.SetFloat("AnimTime",clock.CurrentTime);// + (resetRequired ? -1f : 0f));
+        animator.SetFloat("AnimTime",clock.CurrentTime);// + (resetRequired ? -1f : 0f))
     }
 
     void OnTick()
     {
         animator.SetFloat("AnimTime", clock.CurrentTime);// + (resetRequired ? -1f : 0f));
+        if (direction == Direction.Split)
+        {
+            bool left = animator.GetBool("Left");
+            animator.SetBool("Left", !animator.GetBool("Left"));
+            animator.SetBool("Right", !animator.GetBool("Right"));
+            if (left)
+            {
+                ItemPoint = transform.Find("PivotRight").Find("ItemPoint");
+            }
+            else
+            {
+                ItemPoint = transform.Find("PivotLeft").Find("ItemPoint");
+            }
+        }
     }
 
     public Transform GetNextItemPoint()
