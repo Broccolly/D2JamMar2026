@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9b49c033e2cf77547958d60a7ff2fbff, type: 2}
+  - {fileID: 2100000, guid: f29a4a2af4df5a64e9c20e0fa81644c9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -106,6 +106,10 @@ PrefabInstance:
       propertyPath: conveyorType
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 4086349198540638608, guid: 34b426e3c18ec904fb27d6ac99ba3000, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 5364eb276d5b69542a0db9eecd1e7ec7, type: 2}
     - target: {fileID: 5607960725460164322, guid: 34b426e3c18ec904fb27d6ac99ba3000, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
