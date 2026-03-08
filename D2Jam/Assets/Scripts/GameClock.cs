@@ -7,6 +7,9 @@ public class GameClock : MonoBehaviour
 
     public UnityEvent ClockTickEvent;
 
+    [SerializeField]
+    private float clockSpeed;
+
     public float CurrentTime { get; private set; }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -18,7 +21,7 @@ public class GameClock : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        CurrentTime += Time.fixedDeltaTime;
+        CurrentTime += Time.fixedDeltaTime * clockSpeed;
         if (CurrentTime >= 1.0f)
         {
             ClockTickEvent.Invoke();

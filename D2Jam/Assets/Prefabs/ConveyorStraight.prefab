@@ -48,9 +48,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6527097510745168313, guid: 34b426e3c18ec904fb27d6ac99ba3000, type: 3}
+      propertyPath: m_TagString
+      value: EditorOnly
+      objectReference: {fileID: 0}
     - target: {fileID: 9052590765842071636, guid: 34b426e3c18ec904fb27d6ac99ba3000, type: 3}
       propertyPath: m_Name
-      value: Conveyor
+      value: ConveyorStraight
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

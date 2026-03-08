@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Level
   - Conveyor
+  - Machine
   layers:
   - Default
   - TransparentFX

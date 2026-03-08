@@ -1,59 +1,76 @@
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static Directions;
 
-public class Conveyor : MonoBehaviour
+public class Conveyor : MonoBehaviour, IMachine
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
-    enum Direction { Straight, Left, Right, Split };
+
+    public Vector3Int gridPos { get; set; }
 
     [SerializeField]
-    private Direction direction;
+    public Direction currentDirection;
 
     private Animator animator;
 
     private GameClock clock;
 
-    public Transform? ItemPoint { get; private set; }
+    private Transform activeItemSlot;
+
+    //[ContextMenu("Update Prefab")]
+    //public void UpdatePrefab
+    //{
+
+    //}
+
+    public Transform ItemPoint { get; private set; }
+
+    public enum ConveyorType
+    {
+        Straight,
+        Left,
+        Right
+    }
+
+    [SerializeField]
+    private ConveyorType conveyorType;
 
 
     void Awake()
     {
         animator = GetComponent<Animator>();
 
-        switch (direction)
+        switch (conveyorType)
         {
-            case Direction.Left:
+            case ConveyorType.Left:
                 if (animator != null)
                 {
                     animator.SetBool("IsStraight", false);
                     animator.SetBool("Right", false);
                     animator.SetBool("Left", true);
                 }
+                currentDirection = Direction.Left;
                 break;
-            case Direction.Right:
+            case ConveyorType.Right:
                 if (animator != null)
                 {
                     animator.SetBool("IsStraight", false);
                     animator.SetBool("Right", true);
                     animator.SetBool("Left", false);
                 }
+                currentDirection = Direction.Right;
                 break;
-            case Direction.Straight:
+            case ConveyorType.Straight:
                 if (animator != null)
                 {
                     animator.SetBool("IsStraight", true);
                     animator.SetBool("Right", false);
                     animator.SetBool("Left", false);
                 }
-                break;
-            case Direction.Split:
-                if (animator != null)
-                {
-                    animator.SetBool("IsStraight", false);
-                    animator.SetBool("Split", true);
-                    animator.SetBool("Right", true);
-                    animator.SetBool("Left", false);
-                }
+                currentDirection = Direction.Straight;
                 break;
             default:
                 break;
@@ -61,15 +78,12 @@ public class Conveyor : MonoBehaviour
         }
 
         clock = GameObject.FindGameObjectWithTag("Level").GetComponent<GameClock>();
+        ItemPoint = transform.Find("Pivot").Find("ItemPoint");
+    }
 
-        if (direction == Direction.Split)
-        {
-            ItemPoint = transform.Find("PivotRight").Find("ItemPoint");
-        }
-        else
-        {
-            ItemPoint = transform.Find("Pivot").Find("ItemPoint");
-        }
+    public void OnActivate()
+    {
+
     }
 
     private void Start()
@@ -83,46 +97,32 @@ public class Conveyor : MonoBehaviour
         animator.SetFloat("AnimTime",clock.CurrentTime);// + (resetRequired ? -1f : 0f))
     }
 
+    public void TriggerItem(Item item)
+    {
+        item.transform.SetParent(ItemPoint);
+        item.transform.localPosition = Vector3.zero;
+        item.transform.localRotation = Quaternion.identity;
+        item.currentGridPos = gridPos;
+    }
+
     void OnTick()
     {
         animator.SetFloat("AnimTime", clock.CurrentTime);// + (resetRequired ? -1f : 0f));
-        if (direction == Direction.Split)
-        {
-            bool left = animator.GetBool("Left");
-            animator.SetBool("Left", !animator.GetBool("Left"));
-            animator.SetBool("Right", !animator.GetBool("Right"));
-            if (left)
-            {
-                ItemPoint = transform.Find("PivotRight").Find("ItemPoint");
-            }
-            else
-            {
-                ItemPoint = transform.Find("PivotLeft").Find("ItemPoint");
-            }
-        }
     }
 
-    public Transform GetNextItemPoint()
+    public Vector3Int GetWorldTargetDirection()
     {
-        Vector3 aimDirection=Vector3.zero;
-
-        switch(direction)
+        Vector3 dir = Vector3.zero;
+        if (directionary.ContainsKey(currentDirection))
         {
-            case (Direction.Right):
-                aimDirection = Vector3.forward; break;
-            case (Direction.Left):
-                aimDirection = Vector3.back; break;
-            case (Direction.Straight):
-                aimDirection = Vector3.left; break;
+            dir = directionary[currentDirection];
+        }
+        else
+        {
+            Debug.Log($"Directionary missing {currentDirection}");
         }
 
-        RaycastHit hit;
-
-       if(Physics.Raycast(transform.position, transform.TransformDirection(aimDirection), out hit, 0.7f))
-       {
-            return hit.transform.gameObject.GetComponent<Conveyor>().ItemPoint;
-       }
-        return null;
+            dir = transform.TransformDirection(dir);
+        return new Vector3Int((int)Mathf.Round(dir.x), (int)Mathf.Round(dir.y), (int)Mathf.Round(dir.z));
     }
-
 }
